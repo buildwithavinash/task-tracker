@@ -8,23 +8,34 @@ let emptyStateMsg = document.querySelector(".empty__state--msg");
 let clearAllBtn = document.querySelector(".btn__remove-all");
 let addTaskBtn = document.querySelector(".btn__addtask");
 
-// progress bar 
+// task counts
+let allCount = document.querySelector(".tasks__count");
+let pendingCount = document.querySelector(".pending__tasks__count");
+let completedCount = document.querySelector(".completed__tasks__count");
+let countAllTasks = 0;
+let countPendingTasks = 0;
+let countCompletedTasks = 0;
+
+// progress bar
 let percentage = document.querySelector(".percentage");
-  let progressBar = document.querySelector(".progress__bar");
+let progressBar = document.querySelector(".progress__bar");
 
 // filter
 let filters = document.querySelector(".filter__controls");
-let filterByCategory = document.querySelector("#filter__category")
+let filterByCategory = document.querySelector("#filter__category");
+let searchBar = document.querySelector("#searchBar");
 let currentFilter = "all";
+let currentCategory = "all";
+let currentQuery = "";
 
 // edit mode
 let isEditMode = false;
 let itemToEditID = null;
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-render(tasks);
+applyFilter();
 updateTaskStats();
-
+updateProgressBar();
 
 // form on submit, creating and editing tasks
 form.addEventListener("submit", (e) => {
@@ -58,32 +69,28 @@ form.addEventListener("submit", (e) => {
   }
 
   saveToLocalStorage(tasks);
-  render(tasks);
+  applyFilter();
   updateTaskStats();
   form.reset();
 });
 
 // render
 function render(tasks) {
-
-
   taskList.innerHTML = "";
 
   if (tasks.length === 0) {
     emptyStateMsg.classList.add("show");
-    if(currentFilter === "all"){
-      emptyStateMsg.textContent = "No tasks"
-    }else if(currentFilter === "pending"){
-      emptyStateMsg.textContent = "No pending tasks"
-    }else if(currentFilter === "completed"){
-      emptyStateMsg.textContent = "No tasks completed"
+    if (currentFilter === "all") {
+      emptyStateMsg.textContent = "No tasks";
+    } else if (currentFilter === "pending") {
+      emptyStateMsg.textContent = "No pending tasks";
+    } else if (currentFilter === "completed") {
+      emptyStateMsg.textContent = "No tasks completed";
     }
     return;
   } else {
     emptyStateMsg.classList.remove("show");
   }
-
-  updateTaskStats();
 
   tasks.forEach((ele) => {
     let li = document.createElement("li");
@@ -107,11 +114,11 @@ function render(tasks) {
     taskName.classList.add("task__name");
     taskName.textContent = ele.taskName;
 
-      let taskCategory = document.createElement("p");
-      taskCategory.textContent = ele.category;
-      taskCategory.classList.add("category__badge")
+    let taskCategory = document.createElement("p");
+    taskCategory.textContent = ele.category;
+    taskCategory.classList.add("category__badge");
 
-      li.classList.add(ele.category.toLowerCase());
+    li.classList.add(ele.category.toLowerCase());
     taskLeft.append(taskStatus, taskName, taskCategory);
 
     let taskAction = document.createElement("div");
@@ -135,8 +142,6 @@ function render(tasks) {
 
     taskList.append(li);
   });
-
-  updateProgressBar();
 }
 
 // event delegation to handle actions
@@ -157,9 +162,8 @@ taskList.addEventListener("click", (e) => {
     });
 
     saveToLocalStorage(tasks);
-    render(tasks);
-  
-
+    applyFilter();
+    updateTaskStats();
   }
 
   // remove
@@ -169,8 +173,8 @@ taskList.addEventListener("click", (e) => {
     });
 
     saveToLocalStorage(tasks);
-    render(tasks);
-   
+    applyFilter();
+    updateTaskStats();
   }
 
   // edit
@@ -187,9 +191,7 @@ taskList.addEventListener("click", (e) => {
 
     addTaskBtn.textContent = "Update Task";
     taskInput.value = itemToEdit.taskName;
-    categoryInput.value = itemToEdit.category; 
-    updateTaskStats();
-   
+    categoryInput.value = itemToEdit.category;
   }
 });
 
@@ -200,9 +202,10 @@ function clearAll() {
   itemToEditID = null;
   tasks = [];
   saveToLocalStorage(tasks);
-  render(tasks);
+  applyFilter();
+  updateTaskStats();
+  updateProgressBar();
 }
-
 
 // save data to local storage
 function saveToLocalStorage(tasks) {
@@ -222,71 +225,75 @@ filters.addEventListener("click", function (e) {
 
   if (target.classList.contains("filter__all")) {
     currentFilter = "all";
-    applyFilter();
   }
 
   if (target.classList.contains("filter__pending")) {
     currentFilter = "pending";
-    applyFilter();
   }
 
   if (target.classList.contains("filter__completed")) {
     currentFilter = "completed";
-    applyFilter();
   }
+
+  applyFilter();
+});
+
+filterByCategory.addEventListener("change", function (e) {
+  currentCategory = e.target.value;
+  applyFilter();
+});
+
+// search logic
+searchBar.addEventListener("input", function (e) {
+  currentQuery = searchBar.value.trim().toLowerCase();
+  applyFilter();
 });
 
 // filtering logic
 function applyFilter() {
-  let filteredArray;
-  let categoryFilter = filterByCategory.value;
-  if (currentFilter === "all") {
-    filteredArray = tasks;
-  } else if (currentFilter === "pending") {
-    filteredArray = tasks.filter((el) => !el.isCompleted && el.category.toLowerCase() === categoryFilter);
-  } else if (currentFilter === "completed") {
-    filteredArray = tasks.filter((el) => el.isCompleted && el.category.toLowerCase() === categoryFilter);
-  }
+  let filteredArr = tasks.filter((task) => {
+    let statusMatch =
+      currentFilter === "all" ||
+      (currentFilter === "pending" && !task.isCompleted) ||
+      (currentFilter === "completed" && task.isCompleted);
 
-  if (filteredArray) {
-    render(filteredArray);
-  }
+    let categoryMatch =
+      currentCategory === "all" ||
+      task.category.toLowerCase() === currentCategory;
+
+    let searchMatch = task.taskName.toLowerCase().includes(currentQuery);
+
+    return statusMatch && categoryMatch && searchMatch;
+  });
+
+  render(filteredArr);
 }
 
 // tasks stats
-function updateTaskStats(){
+function updateTaskStats() {
+  countAllTasks = tasks.length;
+  countPendingTasks = tasks.filter((el) => !el.isCompleted).length;
+  countCompletedTasks = tasks.filter((el) => el.isCompleted).length;
 
-let allCount = document.querySelector(".tasks__count");
-let pendingCount = document.querySelector(".pending__tasks__count");
-let completedCount = document.querySelector(".completed__tasks__count");
-let countAllTasks = 0;
-let countPendingTasks = 0;
-let countCompletedTasks = 0;
-
-countAllTasks = tasks.length;
-countPendingTasks = tasks.filter((el) => !el.isCompleted).length;
-countCompletedTasks = tasks.filter((el) => el.isCompleted).length;
-
-allCount.textContent = `Total Tasks : ${countAllTasks}`
-pendingCount.textContent = `Pending Tasks : ${countPendingTasks}`
-completedCount.textContent = `Completed Tasks : ${countCompletedTasks}`
-
-
+  allCount.textContent = `Total Tasks : ${countAllTasks}`;
+  pendingCount.textContent = `Pending Tasks : ${countPendingTasks}`;
+  completedCount.textContent = `Completed Tasks : ${countCompletedTasks}`;
 }
 
 // update progress bar
-function updateProgressBar(){
-   if(tasks.length === 0){
+function updateProgressBar() {
+  if (tasks.length === 0) {
+    percentage.textContent = `0%`;
+    progressBar.style.width = `0%`;
     return;
   }
-  
-  let totalLength = tasks.length;
-  let completed = tasks.filter(e => e.isCompleted);
-  let completedTask = completed.length
 
-  let percent = Math.floor(completedTask/totalLength * 100);
+  let totalLength = tasks.length;
+  let completed = tasks.filter((e) => e.isCompleted);
+  let completedTask = completed.length;
+
+  let percent = Math.floor((completedTask / totalLength) * 100);
 
   percentage.textContent = `${percent}%`;
   progressBar.style.width = `${percent}%`;
-  
 }
