@@ -206,3 +206,7 @@ form {
     background-color: rgb(89, 247, 128);
 }
 
+.filters.active {
+    box-shadow: 0px 0px 5px white;
+}
+

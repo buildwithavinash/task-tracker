@@ -7,6 +7,7 @@ let emptyStateMsg = document.querySelector(".empty__state--msg");
 // buttons
 let clearAllBtn = document.querySelector(".btn__remove-all");
 let addTaskBtn = document.querySelector(".btn__addtask");
+let clearCompleted = document.querySelector(".clear__completed");
 
 // task counts
 let allCount = document.querySelector(".tasks__count");
@@ -33,10 +34,7 @@ let isEditMode = false;
 let itemToEditID = null;
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-applyFilter();
-updateTaskStats();
-updateProgressBar();
-
+ syncUI();
 // form on submit, creating and editing tasks
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -54,6 +52,7 @@ form.addEventListener("submit", (e) => {
       itemToEdit.taskName = taskTitle;
       itemToEdit.category = categoryInput.value;
     }
+
     isEditMode = false;
     itemToEditID = null;
     addTaskBtn.textContent = "Add Task";
@@ -69,8 +68,7 @@ form.addEventListener("submit", (e) => {
   }
 
   saveToLocalStorage(tasks);
-  applyFilter();
-  updateTaskStats();
+   syncUI();
   form.reset();
 });
 
@@ -147,9 +145,7 @@ function render(tasks) {
 // event delegation to handle actions
 taskList.addEventListener("click", (e) => {
   let target = e.target;
-
   let closestTaskItem = target.closest(".task__item");
-
   if (!closestTaskItem) return;
   // change status
 
@@ -162,8 +158,7 @@ taskList.addEventListener("click", (e) => {
     });
 
     saveToLocalStorage(tasks);
-    applyFilter();
-    updateTaskStats();
+    syncUI();
   }
 
   // remove
@@ -173,8 +168,7 @@ taskList.addEventListener("click", (e) => {
     });
 
     saveToLocalStorage(tasks);
-    applyFilter();
-    updateTaskStats();
+     syncUI();
   }
 
   // edit
@@ -202,9 +196,7 @@ function clearAll() {
   itemToEditID = null;
   tasks = [];
   saveToLocalStorage(tasks);
-  applyFilter();
-  updateTaskStats();
-  updateProgressBar();
+   syncUI();
 }
 
 // save data to local storage
@@ -215,23 +207,35 @@ function saveToLocalStorage(tasks) {
 // filters
 filters.addEventListener("click", function (e) {
   let target = e.target;
+  let filterBtn = target.closest(".filters");
+  if (!filterBtn) return;
+
+
+  let allFilters = filters.querySelectorAll(".filters");
+
 
   if (
-    !target.classList.contains("filter__all") &&
-    !target.classList.contains("filter__pending") &&
-    !target.classList.contains("filter__completed")
+    !filterBtn.classList.contains("filter__all") &&
+    !filterBtn.classList.contains("filter__pending") &&
+    !filterBtn.classList.contains("filter__completed")
   )
     return;
 
-  if (target.classList.contains("filter__all")) {
+
+    allFilters.forEach((f)=>{
+      f.classList.remove("active");
+    })
+
+    filterBtn.classList.add("active")
+  if (filterBtn.classList.contains("filter__all")) {
     currentFilter = "all";
   }
 
-  if (target.classList.contains("filter__pending")) {
+  if (filterBtn.classList.contains("filter__pending")) {
     currentFilter = "pending";
   }
 
-  if (target.classList.contains("filter__completed")) {
+  if (filterBtn.classList.contains("filter__completed")) {
     currentFilter = "completed";
   }
 
@@ -296,4 +300,20 @@ function updateProgressBar() {
 
   percentage.textContent = `${percent}%`;
   progressBar.style.width = `${percent}%`;
+}
+
+clearCompleted.addEventListener("click", function(e){
+  tasks = tasks.filter((el)=> {
+    return !el.isCompleted;
+  })
+
+  saveToLocalStorage(tasks);
+ syncUI();
+})
+
+
+function syncUI(){
+ applyFilter();
+  updateTaskStats();
+  updateProgressBar();
 }
