@@ -1,0 +1,208 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1d1d1d;
+    color: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+}
+
+h1 {
+    margin-bottom: 24px;
+}
+
+.btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.app__container {
+    width: 800px;
+    padding: 24px;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.task__container {
+    padding: 24px;
+    border: 1px solid #fafafa;
+    border-radius: 12px;
+    margin-top: 24px;
+}
+
+.task__list {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task__item {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.task__item.completed .task__name{
+    text-decoration: line-through;
+}
+
+.task__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.task__status {
+    border-right: 1px solid #e8e8e8;
+    padding-right: 12px;
+}
+
+.task__right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn__edit {
+    background-color: rgb(92, 175, 248);
+}
+
+.btn__addtask {
+    background-color: rgb(97, 234, 97);
+}
+
+.btn__remove {
+    background-color: rgb(253, 52, 52);
+}
+
+.btn__remove-all {
+    background-color: rgb(255, 142, 44);
+}
+
+
+.empty__state--msg {
+    display: none;
+}
+
+.empty__state--msg.show {
+    display: block;
+}
+
+
+.filter__controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.filters {
+    border: 1px solid #808080;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #1d1d1d;
+    font-weight: bold;
+}
+
+.filter__all {
+    background-color: rgb(55, 178, 199);
+}
+
+.filter__pending {
+    background-color: rgb(255, 30, 30);
+}
+
+.filter__completed {
+    background-color: rgb(40, 159, 40);
+}
+
+.stats {
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.progress__bar__container {
+    width: 150px;
+    height: 15px;
+    border: 1px solid white;
+    border-radius: 4px;
+    position: relative;
+    margin-top: 12px;
+    justify-self: center;
+}
+
+.progress__bar {
+    background-color: aquamarine;
+    width: 0%;
+    height: 100%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    transition: all 0.5s ease;
+}
+
+.percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.category__badge {
+    background-color: rgb(89, 89, 247);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    padding: 4px;
+    color: #1d1d1d;
+}
+
+.task__item.general .category__badge{
+    background-color: rgb(89, 89, 247);
+}
+
+.task__item.work .category__badge{
+    background-color: rgb(231, 247, 89);
+}
+
+.task__item.gym .category__badge{
+    background-color: rgb(247, 99, 89);
+}
+
+.task__item.study .category__badge{
+    background-color: rgb(89, 247, 128);
+}
+

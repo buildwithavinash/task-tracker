@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="app__container">
+        <h1>Task Manager</h1>
+
+        <div class="task__input">
+            <form autocomplete="off">
+
+            <div class="input__group">
+                <label for="task__title">Task : </label>
+                <input type="text" name="task__title" id="task__title">
+            </div>
+
+            <div class="input__group">
+                 <label for="category">Select category : </label>
+            <select name="category" id="category">
+                <option value="general">General</option>
+                <option value="work">Work</option>
+                <option value="gym">Gym</option>
+                <option value="study">Study</option>
+            </select>
+            </div>
+           
+            <button type="submit" class="btn btn__addtask">Add Task</button>
+            <button type="button" class="btn btn__remove-all">Clear All Tasks</button>
+            </form>
+        </div>
+
+
+        <div class="stats">
+            <p class="tasks__count"></p>
+            <p class="pending__tasks__count"></p>
+            <p class="completed__tasks__count"></p>
+        </div>
+
+        <div class="progress__bar__container">
+            <div class="progress__bar"><span class="percentage">0%</span></div>
+        </div>
+
+        <div class="filter__controls">
+            
+                <div class="filters filter__all">All</div>
+                <div class="filters filter__pending">Pending</div>
+                <div class="filters filter__completed">Completed</div>
+ 
+        </div>
+
+        <div class="filter__by__category">
+             <select name="category" id="filter__category">
+                <option value="general">General</option>
+                <option value="work">Work</option>
+                <option value="gym">Gym</option>
+                <option value="study">Study</option>
+            </select>
+        </div>
+        <div class="task__container">
+            <ul class="task__list">
+                <li class="task__item completed">
+                    <div class="task__left">
+                        <p class="task__status">Pending</p>
+                        <p class="task__name">Walk</p>
+                    </div>
+                    <div class="task__right">
+                        <div class="task__actions">
+                            <button class="btn btn__edit">Edit</button>
+                            <button class="btn btn__remove">Remove</button>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="task__item">
+                    <div class="task__left">
+                        <div class="task__status">Pending</div>
+                        <div class="task__name">Walk</div>
+                        <p class="category__badge">General</p>
+                    </div>
+                    <div class="task__right">
+                        <div class="task__actions">
+                            <button class="btn btn__edit">Edit</button>
+                            <button class="btn btn__remove">Remove</button>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+            <p class="empty__state--msg">No tasks created, Add new tasks</p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
